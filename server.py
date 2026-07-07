@@ -197,7 +197,11 @@ class Handler(BaseHTTPRequestHandler):
     def _auth_ok(self):
         if not LOCAL_KEY:
             return True
-        return self.headers.get("Authorization", "") == f"Bearer {LOCAL_KEY}"
+        if self.headers.get("Authorization", "") == f"Bearer {LOCAL_KEY}":
+            return True
+        if f"key={LOCAL_KEY}" in (self.path or ""):
+            return True
+        return False
 
     def _json(self, code, obj):
         data = json.dumps(obj).encode()
@@ -211,16 +215,18 @@ class Handler(BaseHTTPRequestHandler):
         pass
 
     def do_GET(self):
-        if self.path.rstrip("/").endswith("/models"):
+        path = self.path.split("?")[0].rstrip("/")
+        if path.endswith("/models"):
             if not self._auth_ok():
                 return self._json(401, {"error": {"message": "invalid key"}})
             return self._json(200, MODELS_RESP)
-        if self.path.rstrip("/").endswith("/health"):
+        if path.endswith("/health"):
             return self._json(200, {"status": "ok"})
         self._json(404, {"error": {"message": "not found"}})
 
     def do_POST(self):
-        if "/chat/completions" not in self.path:
+        path = self.path.split("?")[0]
+        if "/chat/completions" not in path:
             return self._json(404, {"error": {"message": "not found"}})
         if not self._auth_ok():
             return self._json(401, {"error": {"message": "invalid key"}})
