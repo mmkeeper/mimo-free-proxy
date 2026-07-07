@@ -2,23 +2,52 @@
 """MiMo free channel -> standard OpenAI endpoint with optional SOCKS5 proxy.
 Fingerprint -> bootstrap -> JWT (auto-refresh) -> /api/free-ai/openai/chat.
 """
+import argparse
 import json, os, sys, time, base64, hashlib, threading, platform
 import requests
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-# ===================== SETTINGS (edit here) =====================
-UPSTREAM = "https://api.xiaomimimo.com"           # Base URL of the upstream API
-CLIENT_FILE = r'C:\Projects\mimo_free_proxy\mimo-free-client'  # File to store fingerprint
-LISTEN_HOST = "127.0.0.1"                         # Host to bind
-LISTEN_PORT = 8788                                # Port
-LOCAL_KEY = "sk-mimo-keeper-unique-key"            # API key to access this proxy
+# ── CLI args ───────────────────────────────────────────────────────
 
-# ---------- SOCKS5 Proxy (optional) ----------
-SOCKS5_HOST = None            # set to e.g. "127.0.0.1" to enable
-SOCKS5_PORT = None            # e.g. 1080
-SOCKS5_USERNAME = None        # if needed
-SOCKS5_PASSWORD = None        # if needed
-# ================================================================
+def parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser(description="MiMo Free Proxy")
+    p.add_argument("--port", type=int, default=None, help="Listen port (default: 8788)")
+    p.add_argument("--host", default=None, help="Listen host (default: 127.0.0.1)")
+    p.add_argument("--proxy", default=None, help="SOCKS5 proxy (socks5://host:port or host:port)")
+    p.add_argument("--api-key", default=None, help="API key for client auth")
+    return p.parse_args()
+
+args = parse_args()
+
+# ── Settings ──────────────────────────────────────────────────────
+
+UPSTREAM = os.environ.get("UPSTREAM", "https://api.xiaomimimo.com")
+CLIENT_FILE = os.environ.get("CLIENT_FILE", r'C:\Projects\mimo_free_proxy\mimo-free-client')
+LISTEN_HOST = args.host or os.environ.get("HOST", "127.0.0.1")
+LISTEN_PORT = args.port or int(os.environ.get("PORT", "8788"))
+LOCAL_KEY = args.api_key or os.environ.get("LOCAL_KEY", "sk-mimo-keeper-unique-key")
+
+# ── SOCKS5 Proxy ─────────────────────────────────────────────────
+
+def parse_proxy(raw: str | None) -> tuple[str, int] | None:
+    if not raw:
+        return None
+    raw = raw.removeprefix("socks5://").removeprefix("socks4://")
+    if "@" in raw:
+        raw = raw.split("@", 1)[1]
+    host, port = raw.split(":", 1)
+    return host, int(port)
+
+_proxy = parse_proxy(args.proxy or os.environ.get("SOCKS5_PROXY"))
+if _proxy:
+    SOCKS5_HOST, SOCKS5_PORT = _proxy
+    SOCKS5_USERNAME = os.environ.get("SOCKS5_USERNAME")
+    SOCKS5_PASSWORD = os.environ.get("SOCKS5_PASSWORD")
+else:
+    SOCKS5_HOST = os.environ.get("SOCKS5_HOST", "")
+    SOCKS5_PORT = int(os.environ.get("SOCKS5_PORT", "0"))
+    SOCKS5_USERNAME = os.environ.get("SOCKS5_USERNAME")
+    SOCKS5_PASSWORD = os.environ.get("SOCKS5_PASSWORD")
 
 BOOTSTRAP_URL = f"{UPSTREAM}/api/free-ai/bootstrap"
 CHAT_URL = f"{UPSTREAM}/api/free-ai/openai/chat"
