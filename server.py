@@ -14,10 +14,10 @@ LISTEN_PORT = 8788                                # Port
 LOCAL_KEY = "sk-mimo-keeper-unique-key"            # API key to access this proxy
 
 # ---------- SOCKS5 Proxy (optional) ----------
-SOCKS5_HOST = "127.0.0.1"          # e.g. "127.0.0.1"
-SOCKS5_PORT = 9150          # e.g. 1080
-SOCKS5_USERNAME = None      # if needed
-SOCKS5_PASSWORD = None      # if needed
+SOCKS5_HOST = None            # set to e.g. "127.0.0.1" to enable
+SOCKS5_PORT = None            # e.g. 1080
+SOCKS5_USERNAME = None        # if needed
+SOCKS5_PASSWORD = None        # if needed
 # ================================================================
 
 BOOTSTRAP_URL = f"{UPSTREAM}/api/free-ai/bootstrap"
