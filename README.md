@@ -2,6 +2,16 @@
 
 Локальный HTTP-прокси-сервер для доступа к бесплатному API Xiaomi MiMo через стандартный OpenAI-совместимый интерфейс.
 
+## Related projects
+
+All three projects share the same CLI interface (`--port`, `--host`, `--proxy`, `--api-key`) and work together through [llama-swap](https://github.com/mmkeeper/llama-swap):
+
+| Project | Port | What |
+|---------|------|------|
+| [opencode-free-proxy](https://github.com/mmkeeper/opencode-free-proxy) | 6446 | OpenCode free models |
+| [deepseek-free-api](https://github.com/mmkeeper/deepseek-free-api) | 18632 | DeepSeek free API |
+| [mimo-free-proxy](https://github.com/mmkeeper/mimo-free-proxy) | 8788 | Xiaomi MiMo free API (this) |
+
 ## Возможности
 
 - Проксирование запросов к бесплатному API MiMo
@@ -14,22 +24,25 @@
 ## Установка
 
 ```bash
+git clone https://github.com/mmkeeper/mimo-free-proxy.git
+cd mimo-free-proxy
 pip install -r requirements.txt
 ```
 
-## Настройка
+## CLI arguments
 
-Отредактируйте параметры в начале `server.py`:
+Все проекты используют одинаковый CLI интерфейс:
 
-| Параметр | Описание | По умолчанию |
-|----------|----------|--------------|
-| `LISTEN_HOST` | Хост для прослушивания | `127.0.0.1` |
-| `LISTEN_PORT` | Порт | `8788` |
-| `LOCAL_KEY` | API-ключ для доступа к прокси | `sk-mimo-keeper-unique-key` |
-| `SOCKS5_HOST` | SOCKS5-прокси хост | `127.0.0.1` |
-| `SOCKS5_PORT` | SOCKS5-прокси порт | `9150` |
-| `SOCKS5_USERNAME` | Логин SOCKS5 (если нужен) | `None` |
-| `SOCKS5_PASSWORD` | Пароль SOCKS5 (если нужен) | `None` |
+```bash
+python server.py --port 8788 --host 127.0.0.1 --proxy socks5://127.0.0.1:9150 --api-key sk-my-key
+```
+
+| Аргумент | По умолчанию | Описание |
+|----------|--------------|----------|
+| `--port` | `8788` | Порт прослушивания |
+| `--host` | `127.0.0.1` | Хост прослушивания |
+| `--proxy` | _(нет)_ | SOCKS5 прокси (например `socks5://127.0.0.1:9150`) |
+| `--api-key` | `sk-mimo-keeper-unique-key` | API-ключ для доступа к прокси |
 
 ## Запуск
 
@@ -84,3 +97,7 @@ print(response.choices[0].message.content)
 2. Bootstrap-запрос для получения JWT
 3. При каждом запросе — проксирование к upstream API
 4. Автоматическое обновление JWT при истечении или ошибке 401/403
+
+## llama-swap integration
+
+Этот сервер работает с [llama-swap](https://github.com/mmkeeper/llama-swap) как peer. Пример конфигурации см. в `config.yaml` в репо llama-swap.
