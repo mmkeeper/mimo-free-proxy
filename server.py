@@ -161,6 +161,11 @@ def upstream_chat(payload):
         if isinstance(v, int) and v > MAX_OUTPUT_TOKENS:
             log(f"clamp {f} {v} -> {MAX_OUTPUT_TOKENS}")
             payload[f] = MAX_OUTPUT_TOKENS
+    # MiMo only accepts low/medium/high for reasoning_effort
+    re = payload.get("reasoning_effort")
+    if re and re not in ("low", "medium", "high"):
+        log(f"strip invalid reasoning_effort={re!r}")
+        payload.pop("reasoning_effort", None)
 
     def _do(jwt):
         headers = {
