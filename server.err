@@ -1,0 +1,36 @@
+[03:34:54] JWT refreshed, exp in 3598s
+[03:34:54] startup JWT ok
+[03:34:54] MiMo Free Proxy on http://127.0.0.1:8788 auth=ON
+[03:34:58] upstream request: {"model": "mimo-auto", "messages": [{"role": "system", "content": "You are MiMoCode, an interactive CLI tool that helps users with software engineering tasks. Use the instructions below and the tools available to you to assist the user.\n\nIMPORTANT: You must NEVER generate or guess URLs for the user unless you are confident that the URLs are for helping the user with programming. You may use URLs provided by the user in their messages or local files.\n\nIMPORTANT: Assist with authorized securit
+[03:34:59] upstream error 400 {
+    "error": {
+        "code": "441",
+        "message": "Detected high-frequency non-compliant requests from you. Please consciously comply with the platform usage agreement. If you need to appeal, contact us through the official website channels.",
+        "type": "risk_control"
+    }
+}
+
+[03:34:59] HTTP: "%s" %s %s POST /v1/chat/completions?key=sk-mimo-keeper-unique-key HTTP/1.1 502 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 62604)
+Traceback (most recent call last):
+  File "C:\Python314\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Python314\Lib\http\server.py", line 498, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python314\Lib\http\server.py", line 464, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Python314\Lib\socket.py", line 729, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] Удаленный хост принудительно разорвал существующее подключение
+----------------------------------------

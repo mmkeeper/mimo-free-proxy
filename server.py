@@ -168,6 +168,7 @@ def upstream_chat(payload):
             "X-Mimo-Source": "mimocode-cli-free",
             "Content-Type": "application/json"
         }
+        log("upstream request:", json.dumps(payload)[:500])
         # Use stream=True so we can relay chunks
         return requests.post(CHAT_URL, json=payload, headers=headers,
                              proxies=_proxy_dict, stream=True, timeout=300)
@@ -178,10 +179,15 @@ def upstream_chat(payload):
             log("got", resp.status_code, "-> refresh JWT retry")
             resp.close()
             resp = _do(get_jwt(force=True))
+        if resp.status_code >= 400:
+            try:
+                err_body = resp.text[:1000]
+            except:
+                err_body = "<cannot read>"
+            log("upstream error", resp.status_code, err_body)
         resp.raise_for_status()
         return resp
     except requests.exceptions.RequestException as e:
-        # Convert to something we can raise as HTTPError-like
         raise RuntimeError(f"upstream request failed: {e}")
 
 MODELS_RESP = {
@@ -212,7 +218,7 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def log_message(self, *a):
-        pass
+        log("HTTP:", *a)
 
     def do_GET(self):
         path = self.path.split("?")[0].rstrip("/")
