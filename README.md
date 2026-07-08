@@ -16,10 +16,16 @@ All three projects share the same CLI interface (`--port`, `--host`, `--proxy`, 
 
 - Проксирование запросов к бесплатному API MiMo
 - Автоматическое обновление JWT-токена
-- Поддержка SOCKS5-прокси
+- Поддержка SOCKS5-прокси (⚠️ upstream блокирует некоторые proxy IP)
 - Аутентификация по API-ключу
 - Streaming-ответов (SSE)
 - Совместимость с OpenAI API (`/v1/chat/completions`, `/v1/models`)
+
+## Модели
+
+| ID | Описание | Работает с прокси | Работает без прокси |
+|---|---|---|---|
+| `mimo-auto` | Xiaomi MiMo (авто) | ❌ upstream блокирует | ⚠️ rate-limit |
 
 ## Установка
 
