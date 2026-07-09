@@ -25,7 +25,9 @@ All three projects share the same CLI interface (`--port`, `--host`, `--proxy`, 
 
 | ID | Описание | Работает с прокси | Работает без прокси |
 |---|---|---|---|
-| `mimo-auto` | Xiaomi MiMo (авто) | ❌ upstream блокирует | ⚠️ rate-limit |
+| `mcf-mimo-auto` | Xiaomi MiMo (авто) | ❌ upstream блокирует | ⚠️ rate-limit |
+
+> Префикс `mcf-` используется для совместимости с другими провайдерами в инструментах вроде Hermes. Префикс автоматически снимается перед отправкой в upstream.
 
 ## Установка
 
@@ -67,7 +69,7 @@ curl http://127.0.0.1:8788/v1/chat/completions \
   -H "Authorization: Bearer sk-mimo-keeper-unique-key" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "mimo-auto",
+    "model": "mcf-mimo-auto",
     "messages": [{"role": "user", "content": "Привет!"}]
   }'
 ```
@@ -83,7 +85,7 @@ client = OpenAI(
 )
 
 response = client.chat.completions.create(
-    model="mimo-auto",
+    model="mcf-mimo-auto",
     messages=[{"role": "user", "content": "Привет!"}]
 )
 print(response.choices[0].message.content)

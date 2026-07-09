@@ -91,6 +91,11 @@ else:
 def log(*a):
     print(f"[{time.strftime('%H:%M:%S')}]", *a, file=sys.stderr, flush=True)
 
+PREFIX = "mcf-"
+
+def strip_prefix(model: str) -> str:
+    return model[len(PREFIX):] if model.startswith(PREFIX) else model
+
 def get_fp():
     try:
         v = open(CLIENT_FILE).read().strip()
@@ -200,7 +205,7 @@ def upstream_chat(payload):
 MODELS_RESP = {
     "object": "list",
     "data": [
-        {"id": "mimo-auto", "object": "model", "created": 0, "owned_by": "xiaomi-mimo-free"}
+        {"id": f"{PREFIX}mimo-auto", "object": "model", "created": 0, "owned_by": "xiaomi-mimo-free"}
     ]
 }
 
@@ -245,8 +250,9 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(401, {"error": {"message": "invalid key"}})
         try:
             n = int(self.headers.get("Content-Length", 0))
-            payload = json.loads(self.rfile.read(n).decode())
-        except Exception as e:
+        payload = json.loads(self.rfile.read(n).decode())
+        payload["model"] = strip_prefix(payload.get("model", ""))
+    except Exception as e:
             return self._json(400, {"error": {"message": f"bad request: {e}"}})
         try:
             resp = upstream_chat(payload)
