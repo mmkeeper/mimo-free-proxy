@@ -103,7 +103,9 @@ def get_fp():
         user = os.getlogin()
     except Exception:
         user = os.environ.get("USER", "root")
-    raw = "|".join([platform.node(), "linux", "x64", cpu, user])
+    os_name = platform.system().lower()     # windows, linux, darwin
+    arch = platform.machine().lower()        # amd64, x86_64, arm64
+    raw = "|".join([platform.node(), os_name, arch, cpu, user])
     fp = hashlib.sha256(raw.encode()).hexdigest()
     try:
         os.makedirs(os.path.dirname(CLIENT_FILE), exist_ok=True)
