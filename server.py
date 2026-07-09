@@ -250,9 +250,9 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(401, {"error": {"message": "invalid key"}})
         try:
             n = int(self.headers.get("Content-Length", 0))
-        payload = json.loads(self.rfile.read(n).decode())
-        payload["model"] = strip_prefix(payload.get("model", ""))
-    except Exception as e:
+            payload = json.loads(self.rfile.read(n).decode())
+            payload["model"] = strip_prefix(payload.get("model", ""))
+        except Exception as e:
             return self._json(400, {"error": {"message": f"bad request: {e}"}})
         try:
             resp = upstream_chat(payload)
